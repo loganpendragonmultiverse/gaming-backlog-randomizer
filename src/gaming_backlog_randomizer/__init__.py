@@ -1,3 +1,3 @@
 """Gaming Backlog Randomizer With Rules."""
 
-__version__ = "1.0.0"
+__version__ = "1.1.0"
