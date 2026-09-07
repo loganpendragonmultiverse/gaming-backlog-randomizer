@@ -4,7 +4,7 @@ build-backend = "setuptools.build_meta"
 
 [project]
 name = "gaming-backlog-randomizer"
-version = "1.0.0"
+version = "1.1.0"
 description = "Choose reproducibly from a gaming backlog while honoring explicit filters and exclusions."
 readme = "README.md"
 requires-python = ">=3.10"

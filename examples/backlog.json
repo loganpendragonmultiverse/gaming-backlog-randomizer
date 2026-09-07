@@ -2,7 +2,8 @@
   "version": 1,
   "games": [
     {"id": "north-road", "title": "North Road", "platform": "PC", "genres": ["adventure"], "moods": ["exploration", "story"], "hours": 12, "owned": true, "weight": 2},
-    {"id": "quiet-grid", "title": "Quiet Grid", "platform": "Console", "genres": ["puzzle"], "moods": ["relaxed"], "hours": 6, "owned": true}
+    {"id": "quiet-grid", "title": "Quiet Grid", "platform": "Console", "genres": ["puzzle"], "moods": ["relaxed"], "hours": 6, "owned": true},
+    {"id": "forest-path", "title": "Forest Path", "platform": "PC", "genres": ["adventure"], "moods": ["exploration"], "hours": 8, "owned": true}
   ],
   "rules": {
     "platforms": ["PC"],
