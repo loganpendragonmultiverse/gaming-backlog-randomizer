@@ -30,7 +30,7 @@ Report and ledger/decision/history files are prepared together. If an ordinary w
 
 ## Gold Star review — October 17, 2026
 
-Reviewed release: v1.2.1. Choose a game from your backlog using your own rules and weights, with an optional stable-ID mode that keeps seeded draws consistent when you reorder the list.
+Historical reviewed release (output recovery qualification): v1.2.1. Choose a game from your backlog using your own rules and weights, with an optional stable-ID mode that keeps seeded draws consistent when you reorder the list.
 
 Logan considers this project complete. Continue fixes and maintenance, and consider good new ideas. The catalog records the reviewed release.
 
