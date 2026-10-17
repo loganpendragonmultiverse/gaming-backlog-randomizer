@@ -1,5 +1,11 @@
 # Gaming Backlog Randomizer With Rules
 
+> ⭐ **Gold Star Project**
+> I consider this project complete. Fixes, maintenance and good new ideas are still welcome.
+> [About Gold Stars](https://www.loganpendragonforge.com/open-source/?gold=1)
+>
+> Choose a game from your backlog using your own rules and weights, with an optional stable-ID mode that keeps seeded draws consistent when you reorder the list.
+
 ## Current release 1.2.1
 
 Recover cleanly when writing a report and its companion file fails.
