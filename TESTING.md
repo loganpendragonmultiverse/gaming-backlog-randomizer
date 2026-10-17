@@ -27,3 +27,9 @@ Verify Stage every file before reserving new output names and never overwrite ex
 ## 1.2.2 bounded numeric/date/identity fixes
 
 Reject a non-finite eligible total before either preview or draw; retain existing ordinary weighted selection and seed behavior. Require canonical YYYY-MM-DD as_of and parsed cooldown history dates. Exclude ignored rule fields from stable effective-input identity. Regress finite-total overflow, ordinary/single-large weights, cross-runtime noncanonical dates and ignored metadata without changing source inputs or output recovery.
+
+## 1.3.0 history validation and reusable rules
+
+Validate every supplied history entry before any output, with or without cooldown. Preserve valid extra metadata and source files. Test malformed shapes, missing fields, invalid calendar dates and noncanonical dates on preview and draw paths; a successful appended history must work in a later cooldown.
+
+Add --rules for a primary CSV or JSON backlog. It replaces embedded rules; --compare retains the alternative file's own rules. Reuse the existing hard-rule validation and stable-input identity logic. Exercise preview, draw, history output, comparisons, invalid rules and unchanged input/rule files. Keep normal protected checks and independent exact-head review.
