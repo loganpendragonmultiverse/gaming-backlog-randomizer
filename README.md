@@ -1,5 +1,11 @@
 # Gaming Backlog Randomizer With Rules
 
+## Current release 1.1.1
+
+Reject non-finite hard duration limits before making a draw.
+
+max_hours must be a finite nonnegative number. Seeded draws are reproducible for the same input ordering, rule values, seed and runtime contract; this patch does not silently change the draw ordering algorithm.
+
 [![CI](https://github.com/loganpendragonmultiverse/gaming-backlog-randomizer/actions/workflows/ci.yml/badge.svg)](https://github.com/loganpendragonmultiverse/gaming-backlog-randomizer/actions/workflows/ci.yml)
 
 Gaming Backlog Randomizer chooses from a supplied backlog only after applying explicit platform, genre, mood, length, ownership, recent-play, and ID exclusions. Weighted selection is reproducible from a seed, and every rejected game keeps its reasons.

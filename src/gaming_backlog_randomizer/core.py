@@ -80,9 +80,12 @@ def load_backlog(path: Path) -> dict[str, Any]:
             raise TypeError(f"rule {field} must be a list of text")
     max_hours = rules.get("max_hours")
     if max_hours is not None and (
-        not isinstance(max_hours, (int, float)) or isinstance(max_hours, bool) or max_hours < 0
+        not isinstance(max_hours, (int, float))
+        or isinstance(max_hours, bool)
+        or not math.isfinite(max_hours)
+        or max_hours < 0
     ):
-        raise ValueError("max_hours must be non-negative")
+        raise ValueError("max_hours must be finite and non-negative")
     if "owned_only" in rules and not isinstance(rules["owned_only"], bool):
         raise TypeError("owned_only must be boolean")
     return data
