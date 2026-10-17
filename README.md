@@ -6,7 +6,19 @@
 >
 > Choose a game from your backlog using your own rules and weights, with an optional stable-ID mode that keeps seeded draws consistent when you reorder the list.
 
-## Current release 1.2.2
+## Current release 1.3.0
+
+Apply a reusable JSON rule object to a CSV or JSON backlog:
+
+```bash
+backlog-randomizer games.csv --rules rules.json --seed weekend --preview --format json
+```
+
+For example, `rules.json` can contain `{"platforms":["PC"],"owned_only":true,"max_hours":5}`. This replaces embedded rules for the primary backlog. A file supplied to `--compare` keeps its own rules, so you can compare a different configuration. Existing rule validation, stable-ID identities and source/output protections apply.
+
+Every supplied history entry is validated before a preview, draw or output, even when cooldown filtering is off. Entries require string IDs and valid `YYYY-MM-DD` dates. Additional history metadata is preserved when a new file is written.
+
+## Updates in 1.2.2
 
 Preview and draw both reject an eligible pool whose positive finite weights sum beyond the supported finite total, with an instruction to use smaller weights. This prevents false zero probabilities without changing ordinary seeded draws. Dates supplied for `--as-of` and cooldown history require exact `YYYY-MM-DD` calendar form across supported Python versions. Stable input identity excludes unknown rule metadata as well as unused game metadata; only rules that affect eligibility enter that identity.
 
@@ -14,7 +26,7 @@ Preview and draw both reject an eligible pool whose positive finite weights sum 
 
 Recover cleanly when writing a report and its companion file fails.
 
-Report and ledger/decision/history files are prepared together. If an ordinary write fails, the command removes only unchanged files it created, so you can fix the destination and retry. Existing files, source inputs and files changed by another process are preserved. Outputs are UTF-8 with LF endings. This handles ordinary write failures; it does not promise a multi-file transaction through power loss or recall text already read from stdout.
+Reports and history files are prepared together. If an ordinary write fails, the command removes only unchanged files it created, so you can fix the destination and retry. Existing files, source inputs and files changed by another process are preserved. Outputs are UTF-8 with LF endings. This handles ordinary write failures; it does not promise a multi-file transaction through power loss or recall text already read from stdout.
 
 ## Updates in 1.2.0
 

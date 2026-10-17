@@ -32,7 +32,7 @@ def _canonical_date(value: Any, field: str) -> str:
     return value
 
 
-def load_backlog(path: Path) -> dict[str, Any]:
+def load_backlog(path: Path, rules_override: dict[str, Any] | None = None) -> dict[str, Any]:
     data: dict[str, Any]
     if path.suffix.lower() == ".csv":
         with path.open(encoding="utf-8-sig", newline="") as source:
@@ -64,6 +64,8 @@ def load_backlog(path: Path) -> dict[str, Any]:
         data = json.loads(path.read_text(encoding="utf-8"))
     if not isinstance(data, dict) or data.get("version") != 1:
         raise ValueError("backlog must be a version 1 object")
+    if rules_override is not None:
+        data["rules"] = rules_override
     games = data.get("games")
     rules = data.get("rules", {})
     if not isinstance(games, list) or not games:
@@ -142,6 +144,20 @@ def _reasons(game: dict[str, Any], rules: dict[str, Any]) -> list[str]:
     return reasons
 
 
+def validate_history(history: Any) -> list[dict[str, Any]]:
+    if not isinstance(history, list):
+        raise TypeError("history must be an array of id/date decisions")
+    for entry in history:
+        if (
+            not isinstance(entry, dict)
+            or not isinstance(entry.get("id"), str)
+            or not isinstance(entry.get("date"), str)
+        ):
+            raise TypeError("history entries require id and date strings")
+        _canonical_date(entry["date"], "history date")
+    return history
+
+
 def choose(
     data: dict[str, Any],
     seed: str,
@@ -153,6 +169,7 @@ def choose(
     if count < 1:
         raise ValueError("count must be positive")
     rules = dict(data.get("rules", {}))
+    history = validate_history(data.get("history", []))
     cooldown = data.get("cooldown_days", 0)
     if not isinstance(cooldown, int) or isinstance(cooldown, bool) or cooldown < 0:
         raise ValueError("cooldown_days must be a nonnegative integer")
@@ -162,17 +179,8 @@ def choose(
         if not isinstance(data.get("as_of"), str):
             raise ValueError("cooldown requires an explicit as_of date")
         today = date.fromisoformat(_canonical_date(data["as_of"], "as_of"))
-        history = data.get("history", [])
-        if not isinstance(history, list):
-            raise ValueError("history must be an array of id/date decisions")
         recent = set(rules.get("recent_ids", []))
         for entry in history:
-            if (
-                not isinstance(entry, dict)
-                or not isinstance(entry.get("id"), str)
-                or not isinstance(entry.get("date"), str)
-            ):
-                raise TypeError("history entries require id and date strings")
             days = (today - date.fromisoformat(_canonical_date(entry["date"], "history date"))).days
             if days < 0:
                 raise ValueError("history contains a future decision relative to as_of")

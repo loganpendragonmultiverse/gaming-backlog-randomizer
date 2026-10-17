@@ -22,6 +22,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("--format", choices=("markdown", "json"), default="markdown")
     parser.add_argument("--output", type=Path)
     parser.add_argument(
+        "--rules",
+        type=Path,
+        help="JSON hard-rule object for the primary backlog; overrides embedded rules",
+    )
+    parser.add_argument(
         "--preview", action="store_true", help="Explain eligibility without drawing"
     )
     parser.add_argument("--history", type=Path, help="Local decision history JSON array")
@@ -36,7 +41,10 @@ def main(argv: list[str] | None = None) -> int:
     args = parser.parse_args(argv)
     try:
         validate_output_paths([p for p in (args.output, args.history_output) if p])
-        data = load_backlog(args.input)
+        rules_override = json.loads(args.rules.read_text(encoding="utf-8")) if args.rules else None
+        if args.rules and not isinstance(rules_override, dict):
+            raise TypeError("--rules must contain a JSON object")
+        data = load_backlog(args.input, rules_override=rules_override)
         history = json.loads(args.history.read_text(encoding="utf-8")) if args.history else []
         if not isinstance(history, list):
             raise TypeError("history must be an array")

@@ -1,5 +1,12 @@
 # Changelog
 
+## 1.3.0 - 2026-10-17
+
+- Apply reusable JSON hard rules to CSV or JSON primary backlogs with --rules.
+- Validate all supplied history entries before output, even when cooldown is off.
+- Preserve valid extra history metadata and keep alternative comparison rules independent.
+
+
 ## 1.2.2
 
 - Reject overflowing eligible total weights consistently in previews and draws.
