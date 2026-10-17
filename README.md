@@ -6,7 +6,11 @@
 >
 > Choose a game from your backlog using your own rules and weights, with an optional stable-ID mode that keeps seeded draws consistent when you reorder the list.
 
-## Current release 1.2.1
+## Current release 1.2.2
+
+Preview and draw both reject an eligible pool whose positive finite weights sum beyond the supported finite total, with an instruction to use smaller weights. This prevents false zero probabilities without changing ordinary seeded draws. Dates supplied for `--as-of` and cooldown history require exact `YYYY-MM-DD` calendar form across supported Python versions. Stable input identity excludes unknown rule metadata as well as unused game metadata; only rules that affect eligibility enter that identity.
+
+## Output recovery in 1.2.1
 
 Recover cleanly when writing a report and its companion file fails.
 

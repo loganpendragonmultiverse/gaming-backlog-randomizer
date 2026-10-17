@@ -9,6 +9,28 @@ from datetime import date
 from pathlib import Path
 from typing import Any
 
+RULE_FIELDS = {
+    "platforms",
+    "genres",
+    "moods",
+    "exclude_ids",
+    "recent_ids",
+    "max_hours",
+    "owned_only",
+}
+
+
+def _canonical_date(value: Any, field: str) -> str:
+    if not isinstance(value, str):
+        raise TypeError(f"{field} must be YYYY-MM-DD")
+    try:
+        parsed = date.fromisoformat(value)
+        if parsed.isoformat() != value:
+            raise ValueError("noncanonical date")
+    except ValueError as exc:
+        raise ValueError(f"{field} must be YYYY-MM-DD") from exc
+    return value
+
 
 def load_backlog(path: Path) -> dict[str, Any]:
     data: dict[str, Any]
@@ -134,10 +156,12 @@ def choose(
     cooldown = data.get("cooldown_days", 0)
     if not isinstance(cooldown, int) or isinstance(cooldown, bool) or cooldown < 0:
         raise ValueError("cooldown_days must be a nonnegative integer")
+    if data.get("as_of") is not None:
+        _canonical_date(data["as_of"], "as_of")
     if cooldown:
         if not isinstance(data.get("as_of"), str):
             raise ValueError("cooldown requires an explicit as_of date")
-        today = date.fromisoformat(data["as_of"])
+        today = date.fromisoformat(_canonical_date(data["as_of"], "as_of"))
         history = data.get("history", [])
         if not isinstance(history, list):
             raise ValueError("history must be an array of id/date decisions")
@@ -149,7 +173,7 @@ def choose(
                 or not isinstance(entry.get("date"), str)
             ):
                 raise TypeError("history entries require id and date strings")
-            days = (today - date.fromisoformat(entry["date"])).days
+            days = (today - date.fromisoformat(_canonical_date(entry["date"], "history date"))).days
             if days < 0:
                 raise ValueError("history contains a future decision relative to as_of")
             if days < cooldown:
@@ -171,6 +195,9 @@ def choose(
             eligible.append(game.copy())
     if count > len(eligible) and not preview:
         raise ValueError(f"requested {count} games but only {len(eligible)} are eligible")
+    total_weight = sum(float(game.get("weight", 1)) for game in eligible)
+    if eligible and not math.isfinite(total_weight):
+        raise ValueError("eligible total weight must be finite; use smaller weights")
     seed_number = int.from_bytes(hashlib.sha256(seed.encode("utf-8")).digest()[:8], "big")
     rng = random.Random(seed_number)
     pool = eligible.copy()
@@ -195,7 +222,9 @@ def choose(
             for g in games
         ]
         canonical_rules = {
-            k: sorted(set(v)) if isinstance(v, list) else v for k, v in rules.items()
+            k: sorted(set(v)) if isinstance(v, list) else v
+            for k, v in rules.items()
+            if k in RULE_FIELDS
         }
         identity = hashlib.sha256(
             json.dumps(
@@ -219,8 +248,7 @@ def choose(
         "eligible": [
             {
                 **game,
-                "first_draw_probability": float(game.get("weight", 1))
-                / sum(float(item.get("weight", 1)) for item in eligible),
+                "first_draw_probability": float(game.get("weight", 1)) / total_weight,
             }
             for game in eligible
         ],

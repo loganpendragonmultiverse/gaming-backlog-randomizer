@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.2
+
+- Reject overflowing eligible total weights consistently in previews and draws.
+- Validate canonical as-of/cooldown dates across supported Python versions.
+- Exclude ignored rule metadata from stable effective-input identities.
+
 ## 1.2.1 - 2026-10-17
 
 - Reject duplicate CSV columns and mismatched row widths before producing a draw or history file.
