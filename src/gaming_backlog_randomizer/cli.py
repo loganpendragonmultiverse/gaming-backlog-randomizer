@@ -6,6 +6,7 @@ import sys
 from pathlib import Path
 
 from .core import choose, load_backlog, render_markdown
+from .output import validate_output_paths, write_new_outputs
 
 
 def main(argv: list[str] | None = None) -> int:
@@ -34,6 +35,7 @@ def main(argv: list[str] | None = None) -> int:
     )
     args = parser.parse_args(argv)
     try:
+        validate_output_paths([p for p in (args.output, args.history_output) if p])
         data = load_backlog(args.input)
         history = json.loads(args.history.read_text(encoding="utf-8")) if args.history else []
         if not isinstance(history, list):
@@ -65,12 +67,9 @@ def main(argv: list[str] | None = None) -> int:
             if args.format == "json"
             else render_markdown(report)
         )
+        outputs = []
         if args.output:
-            if args.output.exists():
-                raise ValueError(f"output already exists: {args.output}")
-            args.output.write_text(rendered, encoding="utf-8")
-        else:
-            sys.stdout.write(rendered)
+            outputs.append((args.output, rendered))
         if args.history_output:
             decisions = [
                 {
@@ -82,9 +81,13 @@ def main(argv: list[str] | None = None) -> int:
                 }
                 for game in report["selected"]
             ]
-            args.history_output.write_text(
-                json.dumps(history + decisions, indent=2) + "\n", encoding="utf-8"
-            )
+            outputs.append((args.history_output, json.dumps(history + decisions, indent=2) + "\n"))
+
+        def deliver() -> None:
+            sys.stdout.write(rendered)
+            sys.stdout.flush()
+
+        write_new_outputs(outputs, deliver=None if args.output else deliver)
     except (OSError, TypeError, ValueError, json.JSONDecodeError) as exc:
         print(f"error: {exc}", file=sys.stderr)
         return 2

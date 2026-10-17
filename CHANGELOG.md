@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.2.1 - 2026-10-17
+
+- Reject duplicate CSV columns and mismatched row widths before producing a draw or history file.
+
+- Stage every file before reserving new output names and never overwrite existing destinations
+- Roll back only unchanged files created by the failed command, preserving concurrent changes
+- Keep stdout delivery inside the output operation and test permission failures, collisions and retry
+
 ## 1.2.0 - 2026-10-17
 
 - Add opt-in --stable-ids sorting before weighted draws and previews

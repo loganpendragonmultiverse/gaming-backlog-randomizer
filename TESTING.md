@@ -17,3 +17,9 @@ Verify Reject NaN and infinite max_hours values with actionable errors; Retain f
 Keep a seeded draw consistent when the same backlog is reordered.
 
 Verify Add opt-in --stable-ids sorting before weighted draws and previews; Record a SHA-256 identity for effective selection inputs and mode in reports/history; Preserve the original input-order mode and reject blank or duplicate IDs in stable mode. Run the full existing quality and build gates; release only through protected PR checks and verified tag artifacts.
+
+## 1.2.1 acceptance
+
+Recover cleanly when writing a report and its companion file fails.
+
+Verify Stage every file before reserving new output names and never overwrite existing destinations; Roll back only unchanged files created by the failed command, preserving concurrent changes; Keep stdout delivery inside the output operation and test permission failures, collisions and retry. Run the full existing quality and build gates; release only through protected PR checks and verified tag artifacts.
