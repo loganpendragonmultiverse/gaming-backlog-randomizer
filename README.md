@@ -1,6 +1,12 @@
 # Gaming Backlog Randomizer With Rules
 
-## Current release 1.1.1
+## Current release 1.2.0
+
+Keep a seeded draw consistent when the same backlog is reordered.
+
+Use backlog-randomizer backlog.json --seed weekend --stable-ids --count 2 --format json. Keep IDs attached to the same games when editing or reordering. stable-id-v1 sorts IDs by Unicode code point before the existing Python weighted draw. The same seed, effective metadata/rules and supported runtime reproduce selections despite array reordering. Identity excludes titles and unused metadata; it is an audit aid, not proof of play or a cryptographic random draw. Changes to weights, eligibility or cooldown history may change results. The default input-order-v1 mode retains earlier behavior.
+
+## Updates in 1.1.1
 
 Reject non-finite hard duration limits before making a draw.
 

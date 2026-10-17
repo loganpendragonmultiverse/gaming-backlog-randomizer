@@ -13,6 +13,11 @@ def main(argv: list[str] | None = None) -> int:
     parser.add_argument("input", type=Path)
     parser.add_argument("--seed", required=True)
     parser.add_argument("--count", type=int, default=1)
+    parser.add_argument(
+        "--stable-ids",
+        action="store_true",
+        help="Sort by stable game ID before weighted selection; record effective-input identity",
+    )
     parser.add_argument("--format", choices=("markdown", "json"), default="markdown")
     parser.add_argument("--output", type=Path)
     parser.add_argument(
@@ -34,11 +39,15 @@ def main(argv: list[str] | None = None) -> int:
         if not isinstance(history, list):
             raise TypeError("history must be an array")
         data.update(history=history, cooldown_days=args.cooldown_days, as_of=args.as_of)
-        report = choose(data, args.seed, args.count, preview=args.preview)
+        report = choose(
+            data, args.seed, args.count, preview=args.preview, stable_ids=args.stable_ids
+        )
         if args.compare:
             alternative = load_backlog(args.compare)
             alternative.update(history=history, cooldown_days=args.cooldown_days, as_of=args.as_of)
-            report["comparison"] = choose(alternative, args.seed, args.count, preview=True)
+            report["comparison"] = choose(
+                alternative, args.seed, args.count, preview=True, stable_ids=args.stable_ids
+            )
         if args.history_output:
             from datetime import date
 
@@ -64,7 +73,13 @@ def main(argv: list[str] | None = None) -> int:
             sys.stdout.write(rendered)
         if args.history_output:
             decisions = [
-                {"id": game["id"], "date": args.as_of, "seed": args.seed}
+                {
+                    "id": game["id"],
+                    "date": args.as_of,
+                    "seed": args.seed,
+                    "selection_mode": report["selection_mode"],
+                    "input_identity": report["input_identity"],
+                }
                 for game in report["selected"]
             ]
             args.history_output.write_text(
