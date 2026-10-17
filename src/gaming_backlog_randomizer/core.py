@@ -14,7 +14,15 @@ def load_backlog(path: Path) -> dict[str, Any]:
     data: dict[str, Any]
     if path.suffix.lower() == ".csv":
         with path.open(encoding="utf-8-sig", newline="") as source:
-            csv_games: list[dict[str, Any]] = [dict(row) for row in csv.DictReader(source)]
+            reader = csv.DictReader(source)
+            headers = reader.fieldnames or []
+            if not headers or len(headers) != len(set(headers)):
+                raise ValueError("CSV must have distinct column names")
+            csv_games: list[dict[str, Any]] = []
+            for row in reader:
+                if None in row or any(value is None for value in row.values()):
+                    raise ValueError("CSV row width must match its header")
+                csv_games.append(dict(row))
         for game in csv_games:
             for field in ("genres", "moods"):
                 game[field] = [

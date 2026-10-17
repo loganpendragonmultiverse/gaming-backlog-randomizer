@@ -21,3 +21,9 @@ max_hours must be a finite nonnegative number. Seeded draws are reproducible for
 Keep a seeded draw consistent when the same backlog is reordered.
 
 Use backlog-randomizer backlog.json --seed weekend --stable-ids --count 2 --format json. Keep IDs attached to the same games when editing or reordering. stable-id-v1 sorts IDs by Unicode code point before the existing Python weighted draw. The same seed, effective metadata/rules and supported runtime reproduce selections despite array reordering. Identity excludes titles and unused metadata; it is an audit aid, not proof of play or a cryptographic random draw. Changes to weights, eligibility or cooldown history may change results. The default input-order-v1 mode retains earlier behavior.
+
+## 1.2.1 acceptance
+
+Recover cleanly when writing a report and its companion file fails.
+
+Report and ledger/decision/history files are prepared together. If an ordinary write fails, the command removes only unchanged files it created, so you can fix the destination and retry. Existing files, source inputs and files changed by another process are preserved. Outputs are UTF-8 with LF endings. This handles ordinary write failures; it does not promise a multi-file transaction through power loss or recall text already read from stdout.
