@@ -113,7 +113,12 @@ def _reasons(game: dict[str, Any], rules: dict[str, Any]) -> list[str]:
 
 
 def choose(
-    data: dict[str, Any], seed: str, count: int = 1, *, preview: bool = False
+    data: dict[str, Any],
+    seed: str,
+    count: int = 1,
+    *,
+    preview: bool = False,
+    stable_ids: bool = False,
 ) -> dict[str, Any]:
     if count < 1:
         raise ValueError("count must be positive")
@@ -142,9 +147,15 @@ def choose(
             if days < cooldown:
                 recent.add(entry["id"])
         rules["recent_ids"] = sorted(recent)
+    games = data["games"]
+    if stable_ids:
+        ids = [g.get("id") for g in games]
+        if any(not isinstance(i, str) or not i.strip() for i in ids) or len(ids) != len(set(ids)):
+            raise ValueError("stable-ID mode requires unique non-empty string IDs")
+        games = sorted(games, key=lambda g: g["id"])
     eligible = []
     excluded = []
-    for game in data["games"]:
+    for game in games:
         reasons = _reasons(game, rules)
         if reasons:
             excluded.append({"id": game["id"], "title": game["title"], "reasons": reasons})
@@ -160,8 +171,37 @@ def choose(
         pick = rng.choices(pool, weights=[float(game.get("weight", 1)) for game in pool], k=1)[0]
         selected.append(pick)
         pool.remove(pick)
+    identity = None
+    if stable_ids:
+        # Only fields used by eligibility/selection belong to the input identity.
+        canonical_games = [
+            {
+                "id": g["id"],
+                "platform": g["platform"],
+                "genres": sorted(set(g.get("genres", []))),
+                "moods": sorted(set(g.get("moods", []))),
+                "owned": g.get("owned", False),
+                "hours": g.get("hours"),
+                "weight": float(g.get("weight", 1)),
+            }
+            for g in games
+        ]
+        canonical_rules = {
+            k: sorted(set(v)) if isinstance(v, list) else v for k, v in rules.items()
+        }
+        identity = hashlib.sha256(
+            json.dumps(
+                {"games": canonical_games, "rules": canonical_rules},
+                sort_keys=True,
+                separators=(",", ":"),
+                ensure_ascii=False,
+                allow_nan=False,
+            ).encode("utf-8")
+        ).hexdigest()
     return {
         "version": 1,
+        "selection_mode": "stable-id-v1" if stable_ids else "input-order-v1",
+        "input_identity": identity,
         "seed": seed,
         "requested_count": count,
         "eligible_count": len(eligible),
@@ -184,6 +224,7 @@ def render_markdown(report: dict[str, Any]) -> str:
     lines = [
         "# Gaming Backlog Draw",
         "",
+        f"Mode: {report.get('selection_mode', 'input-order-v1')} · Input identity: {report.get('input_identity') or 'not recorded'}",
         f"Seed: `{report['seed']}` · Eligible: **{report['eligible_count']}** · Excluded: **{report['excluded_count']}**",
         "",
         "## Selected",

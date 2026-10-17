@@ -1,5 +1,11 @@
 # Changelog
 
+## 1.2.0 - 2026-10-17
+
+- Add opt-in --stable-ids sorting before weighted draws and previews
+- Record a SHA-256 identity for effective selection inputs and mode in reports/history
+- Preserve the original input-order mode and reject blank or duplicate IDs in stable mode
+
 ## 1.1.1 - 2026-10-17
 
 - Reject NaN and infinite max_hours values with actionable errors

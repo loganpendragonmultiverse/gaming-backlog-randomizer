@@ -15,3 +15,9 @@ Local formatting, lint, strict types and regression tests pass. Public release c
 Reject non-finite hard duration limits before making a draw.
 
 max_hours must be a finite nonnegative number. Seeded draws are reproducible for the same input ordering, rule values, seed and runtime contract; this patch does not silently change the draw ordering algorithm.
+
+## 1.2.0 acceptance
+
+Keep a seeded draw consistent when the same backlog is reordered.
+
+Use backlog-randomizer backlog.json --seed weekend --stable-ids --count 2 --format json. Keep IDs attached to the same games when editing or reordering. stable-id-v1 sorts IDs by Unicode code point before the existing Python weighted draw. The same seed, effective metadata/rules and supported runtime reproduce selections despite array reordering. Identity excludes titles and unused metadata; it is an audit aid, not proof of play or a cryptographic random draw. Changes to weights, eligibility or cooldown history may change results. The default input-order-v1 mode retains earlier behavior.

@@ -11,3 +11,9 @@ Run the complete existing suite plus the new regression fixtures. Confirm the do
 Reject non-finite hard duration limits before making a draw.
 
 Verify Reject NaN and infinite max_hours values with actionable errors; Retain finite hard-limit filtering and source/output protections. Run the full existing quality and build gates; release only through protected PR checks and verified tag artifacts.
+
+## 1.2.0 acceptance
+
+Keep a seeded draw consistent when the same backlog is reordered.
+
+Verify Add opt-in --stable-ids sorting before weighted draws and previews; Record a SHA-256 identity for effective selection inputs and mode in reports/history; Preserve the original input-order mode and reject blank or duplicate IDs in stable mode. Run the full existing quality and build gates; release only through protected PR checks and verified tag artifacts.
