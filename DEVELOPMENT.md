@@ -30,8 +30,12 @@ Report and ledger/decision/history files are prepared together. If an ordinary w
 
 ## Gold Star review — October 17, 2026
 
-Reviewed release: v1.2.1. Choose a game from your backlog using your own rules and weights, with an optional stable-ID mode that keeps seeded draws consistent when you reorder the list.
+Historical reviewed release (output recovery qualification): v1.2.1. Choose a game from your backlog using your own rules and weights, with an optional stable-ID mode that keeps seeded draws consistent when you reorder the list.
 
 Logan considers this project complete. Continue fixes and maintenance, and consider good new ideas. The catalog records the reviewed release.
 
 Definition: https://www.loganpendragonforge.com/open-source/?gold=1
+
+## 1.2.2 bounded numeric/date/identity fixes
+
+Reject a non-finite eligible total before either preview or draw; retain existing ordinary weighted selection and seed behavior. Require canonical YYYY-MM-DD as_of and parsed cooldown history dates. Exclude ignored rule fields from stable effective-input identity. Regress finite-total overflow, ordinary/single-large weights, cross-runtime noncanonical dates and ignored metadata without changing source inputs or output recovery.
