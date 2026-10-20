@@ -45,3 +45,7 @@ Reject a non-finite eligible total before either preview or draw; retain existin
 Validate every supplied history entry before any output, with or without cooldown. Preserve valid extra metadata and source files. Test malformed shapes, missing fields, invalid calendar dates and noncanonical dates on preview and draw paths; a successful appended history must work in a later cooldown.
 
 Add --rules for a primary CSV or JSON backlog. It replaces embedded rules; --compare retains the alternative file's own rules. Reuse the existing hard-rule validation and stable-input identity logic. Exercise preview, draw, history output, comparisons, invalid rules and unchanged input/rule files. Keep normal protected checks and independent exact-head review.
+
+## 1.3.1 numeric boundaries
+
+Reject actual JSON integers `10**400` and `-(10**400)` with actionable finite-number errors. Cover NaN/infinity, booleans, numeric strings, negative/zero boundaries, the maximum finite float and aggregate overflow. Verify CLI failures leave inputs unchanged and create no output or companion file. Keep the full quality, dependency audit, protected PR/main/tag and original installed wheel/source-distribution gates. Do not clamp values or alter ordinary seeded selection.

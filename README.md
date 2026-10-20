@@ -6,7 +6,13 @@
 >
 > Choose a game from your backlog using your own rules and weights, with an optional stable-ID mode that keeps seeded draws consistent when you reorder the list.
 
-## Current release 1.3.0
+## Current release 1.3.1
+
+Numeric fields reject values outside the finite float range with a normal input error, including JSON integers such as `10**400`. Values are never clamped or silently replaced. Wheels and source distributions include the README, changelog, development/testing instructions, license and runnable examples.
+
+Hours, weights and max_hours are checked before preview or draw. Eligible weight totals must also remain finite; ordinary seeded draws keep their existing behavior.
+
+## Updates in 1.3.0
 
 Apply a reusable JSON rule object to a CSV or JSON backlog:
 

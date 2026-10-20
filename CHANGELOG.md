@@ -1,5 +1,13 @@
 # Changelog
 
+## 1.3.1 - 2026-10-20
+
+- Include handoff documentation and runnable examples in wheels and source distributions.
+
+- Return controlled input errors for integers outside the finite float range instead of raising OverflowError.
+- Validate individual numeric values before report calculations; preserve supported finite values and original input files.
+- Apply the same numeric checks to direct preview/draw calls, including excluded games and max_hours.
+
 ## 1.3.0 - 2026-10-17
 
 - Apply reusable JSON hard rules to CSV or JSON primary backlogs with --rules.

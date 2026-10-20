@@ -5,6 +5,7 @@ import hashlib
 import json
 import math
 import random
+import sys
 from datetime import date
 from pathlib import Path
 from typing import Any
@@ -30,6 +31,20 @@ def _canonical_date(value: Any, field: str) -> str:
     except ValueError as exc:
         raise ValueError(f"{field} must be YYYY-MM-DD") from exc
     return value
+
+
+def _number(value: Any, field: str, *, positive: bool = False) -> float:
+    bound = "positive" if positive else "non-negative"
+    message = f"{field} must be finite and {bound}"
+    if not isinstance(value, (int, float)) or isinstance(value, bool) or value > sys.float_info.max:
+        raise ValueError(message)
+    try:
+        number = float(value)
+    except OverflowError as exc:
+        raise ValueError(message) from exc
+    if not math.isfinite(number) or (number <= 0 if positive else number < 0):
+        raise ValueError(message)
+    return number
 
 
 def load_backlog(path: Path, rules_override: dict[str, Any] | None = None) -> dict[str, Any]:
@@ -90,20 +105,9 @@ def load_backlog(path: Path, rules_override: dict[str, Any] | None = None) -> di
                 raise TypeError(f"game {game['id']} field {field} must be a list of text")
         hours = game.get("hours")
         weight = game.get("weight", 1)
-        if hours is not None and (
-            not isinstance(hours, (int, float))
-            or isinstance(hours, bool)
-            or not math.isfinite(hours)
-            or hours < 0
-        ):
-            raise ValueError(f"game {game['id']} hours must be non-negative")
-        if (
-            not isinstance(weight, (int, float))
-            or isinstance(weight, bool)
-            or not math.isfinite(weight)
-            or weight <= 0
-        ):
-            raise ValueError(f"game {game['id']} weight must be positive")
+        if hours is not None:
+            _number(hours, f"game {game['id']} hours")
+        _number(weight, f"game {game['id']} weight", positive=True)
         if "owned" in game and not isinstance(game["owned"], bool):
             raise TypeError(f"game {game['id']} owned must be boolean")
     for field in ("platforms", "genres", "moods", "exclude_ids", "recent_ids"):
@@ -111,13 +115,8 @@ def load_backlog(path: Path, rules_override: dict[str, Any] | None = None) -> di
         if not isinstance(value, list) or any(not isinstance(item, str) for item in value):
             raise TypeError(f"rule {field} must be a list of text")
     max_hours = rules.get("max_hours")
-    if max_hours is not None and (
-        not isinstance(max_hours, (int, float))
-        or isinstance(max_hours, bool)
-        or not math.isfinite(max_hours)
-        or max_hours < 0
-    ):
-        raise ValueError("max_hours must be finite and non-negative")
+    if max_hours is not None:
+        _number(max_hours, "max_hours")
     if "owned_only" in rules and not isinstance(rules["owned_only"], bool):
         raise TypeError("owned_only must be boolean")
     return data
@@ -169,6 +168,8 @@ def choose(
     if count < 1:
         raise ValueError("count must be positive")
     rules = dict(data.get("rules", {}))
+    if rules.get("max_hours") is not None:
+        _number(rules["max_hours"], "max_hours")
     history = validate_history(data.get("history", []))
     cooldown = data.get("cooldown_days", 0)
     if not isinstance(cooldown, int) or isinstance(cooldown, bool) or cooldown < 0:
@@ -196,6 +197,9 @@ def choose(
     eligible = []
     excluded = []
     for game in games:
+        if game.get("hours") is not None:
+            _number(game["hours"], f"game {game['id']} hours")
+        _number(game.get("weight", 1), f"game {game['id']} weight", positive=True)
         reasons = _reasons(game, rules)
         if reasons:
             excluded.append({"id": game["id"], "title": game["title"], "reasons": reasons})
